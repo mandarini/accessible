@@ -1,20 +1,159 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-</div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<div id="status" #status *ngIf="predictingVisible">Loading mobilenet...</div>
+<div class="controller-panels" id="controller" #controller style="display:none">
+  <div class="panel training-panel">
+    <!-- Big buttons. -->
 
+    <div class="panel-row params-webcam-row">
+      <!-- Hyper params. -->
+      <div class="hyper-params">
+        <!-- Learning rate -->
+        <div class="dropdown">
+          <label>Learning rate</label>
+          <div class="select">
+            <select #learningRate type="number" [(ngModel)]="learningRateSel">
+              <option *ngFor="let opt of learningRates" [ngValue]="opt.num">{{
+                opt.name
+              }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Batch size -->
+        <div class="dropdown">
+          <label>Batch size</label>
+          <div class="select">
+            <select #batchSizeFraction type="number" [(ngModel)]="batchSizeSel">
+              <option *ngFor="let opt of batchSizes" [ngValue]="opt.num">{{
+                opt.name
+              }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Epochs -->
+        <div class="dropdown">
+          <label>Epochs</label>
+          <div class="select">
+            <select #epochs type="number" [(ngModel)]="epochSel">
+              <option *ngFor="let opt of epochsOptions" [ngValue]="opt.num">{{
+                opt.name
+              }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hidden units -->
+        <div class="dropdown">
+          <label>Hidden units</label>
+          <div class="select">
+            <select #denseUnits type="number" [(ngModel)]="denseSel">
+              <option *ngFor="let opt of hiddenUnits" [ngValue]="opt.num">{{
+                opt.name
+              }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- /.hyper-params -->
+
+      <div class="webcam-box-outer">
+        <div class="webcam-box-inner">
+          <video
+            autoplay
+            playsinline
+            muted
+            id="webcam"
+            #webcam
+            width="224"
+            height="224"
+          ></video>
+        </div>
+      </div>
+    </div>
+    <!-- /.panel-row -->
+  </div>
+  <!-- /.panel -->
+  <div class="signs">
+    <p class="help-text">
+      Add here a sequence of three secret signs you are going to use in order to
+      access your secret personal space! In the end, add a neutral sign, too,
+      for reference.
+    </p>
+    <div class="signs-examples">
+      <div class="thumb-box">
+        <p>First Secret Sign</p>
+        <div class="thumb-box-outer">
+          <div class="thumb-box-inner">
+            <canvas class="thumb" width="224" height="224" #firstThumb></canvas>
+          </div>
+          <button class="record-button" #first (click)="handler(0)">
+            <span>Add Sample</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="thumb-box">
+        <p>Second Secret Sign</p>
+        <div class="thumb-box-outer">
+          <div class="thumb-box-inner">
+            <canvas
+              class="thumb"
+              width="224"
+              height="224"
+              #secondThumb
+            ></canvas>
+          </div>
+          <button class="record-button" #second (click)="handler(1)">
+            <span>Add Sample</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="thumb-box">
+        <p>Third Secret Sign</p>
+        <div class="thumb-box-outer">
+          <div class="thumb-box-inner">
+            <canvas class="thumb" width="224" height="224" #thirdThumb></canvas>
+          </div>
+          <button class="record-button" #third (click)="handler(2)">
+            <span>Add Sample</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="thumb-box">
+        <p>Neutral</p>
+        <div class="thumb-box-outer">
+          <div class="thumb-box-inner">
+            <canvas
+              class="thumb"
+              width="224"
+              height="224"
+              #controlThumb
+            ></canvas>
+          </div>
+          <button class="record-button" #control (click)="handler(3)">
+            <span>Add Sample</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="big-buttons">
+    <button mat-raised-button color="primary" (click)="trainBtn()">
+      <span id="train-status">{{ trainStatus }}</span>
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="predictBtn()"
+      [disabled]="!doneTraining"
+    >
+      <span *ngIf="!isPredicting">CHECK</span
+      ><span *ngIf="isPredicting">STOP</span>
+    </button>
+  </div>
+  <p *ngIf="currentMove">
+    You are currently doing the <strong>{{ currentMove }}</strong> sign.
+  </p>
+</div>

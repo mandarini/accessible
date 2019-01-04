@@ -1,0 +1,193 @@
+/** Loading message. */
+#status {
+  color: #f8f8f8;
+  font-weight: 300;
+  margin: 12px 0;
+  text-align: center;
+}
+
+/** Controls. **/
+.controller-panels {
+  // background: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  margin: 9px auto;
+  align-items: center;
+}
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+.signs-examples {
+  button {
+    background: none;
+    border: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+  }
+}
+
+/** Training panel. **/
+.big-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.params-webcam-row {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 35px;
+}
+.webcam-box-outer {
+  background: black;
+  border: 1px solid #585858;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 9px;
+}
+.webcam-box-inner {
+  border: 1px solid #585858;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 160px;
+}
+#webcam {
+  height: 160px;
+  transform: scaleX(-1);
+}
+.hyper-params {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+}
+.dropdown {
+  flex-direction: column;
+  width: 110px;
+  margin-bottom: 10px;
+}
+.dropdown label {
+  color: #777;
+  font-size: 11px;
+  display: block;
+  font-weight: 300;
+  line-height: 1;
+}
+.dropdown .select {
+  position: relative;
+}
+.dropdown .select select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+  border: none;
+  border-bottom: solid 1px #313131;
+  border-radius: 0;
+  color: #c9c9c9;
+  display: block;
+  font-size: 12px;
+  outline: none;
+  padding: 6px 0;
+  width: 100%;
+}
+.dropdown .select::after {
+  content: "arrow_drop_down";
+  color: #999;
+  font-family: "Material Icons";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  position: absolute;
+  right: 0;
+  top: 6px;
+  pointer-events: none;
+}
+
+.signs {
+  display: flex;
+  flex-direction: column;
+  padding: 36px;
+  .signs-examples {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.thumb-box {
+  display: inline-block;
+}
+.panel-row-middle .thumb-box {
+  margin-top: 18px;
+}
+.thumb-box-outer {
+  background: black;
+  border: 1px solid #585858;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 9px;
+  position: relative;
+  transition: box-shadow 0.3s;
+}
+
+.thumb-box-inner {
+  border: 1px solid #585858;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  width: 66px;
+}
+.thumb {
+  height: 66px;
+  transform: scaleX(-1);
+}
+.thumb-box-outer .record-button {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.thumb-box-outer .record-button span {
+  background: #111;
+  border: 1px solid #585858;
+  border-radius: 3px;
+  bottom: 9px;
+  color: #f8f8f8;
+  display: block;
+  font-size: 8px;
+  left: 9px;
+  position: absolute;
+  right: 9px;
+  opacity: 0.5;
+}
+
+.all-buttons {
+  padding: 16px;
+  // display: flex;
+  // align-items: center;
+  // justify-content: space-between;
+}
