@@ -129,7 +129,7 @@ export class AppComponent {
     if (e.code === "KeyK") {
       console.log(foc.item(this.counter));
       foc.item(this.counter).focus();
-      if (this.counter < foc.length) {
+      if (this.counter < foc.length - 1) {
         this.counter++;
       } else {
         this.counter = 0;
