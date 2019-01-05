@@ -17,7 +17,6 @@ import { ControllerDataset } from "./controller-dataset";
 export class AppComponent {
   title = "accessible";
   CONTROLS: Array<string> = ["first", "second", "third", "control"];
-  CONTROL_CODES: Array<number> = [38, 40, 37, 39];
   NUM_CLASSES: number = 4;
   webcam: Webcam;
   controllerDataset: ControllerDataset;
