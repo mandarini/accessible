@@ -107,7 +107,7 @@ export class AppComponent {
     let foc = this.focusable;
     if (num === 0) {
       foc.item(this.counter).focus();
-      if (this.counter < foc.length) {
+      if (this.counter < foc.length - 1) {
         this.counter++;
       } else {
         this.counter = 0;
