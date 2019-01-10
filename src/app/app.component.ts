@@ -104,7 +104,6 @@ export class AppComponent {
 
   ngOnInit() {
     this.init();
-    document.addEventListener("keydown", this.logKey);
     let test = this.actionClass.pipe(throttle(val => interval(3000)));
     test.subscribe(x => {
       console.log("emission", x);
@@ -121,38 +120,15 @@ export class AppComponent {
     if (num === 0) {
       console.log(foc.item(this.counter));
       foc.item(this.counter).focus();
-      if (this.counter < foc.length - 1) {
-        this.counter++;
-      } else {
-        this.counter = 0;
-      }
     }
     if (num === 2) {
+      console.log(foc.item(this.counter));
       foc.item(this.counter).click();
     }
-  }
-
-  logKey(e) {
-    this.focusable = document.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    // console.log(this.focusable);
-    let foc = this.focusable;
-    // console.log(e.code);
-    if (e.code === "KeyK") {
-      // console.log(foc.item(this.counter));
-      foc.item(this.counter).focus();
-      if (this.counter < foc.length - 1) {
-        this.counter++;
-      } else {
-        this.counter = 0;
-      }
-    }
-
-    if (e.code === "KeyL") {
-      console.log(document.activeElement);
-      // this.clickIt = document.activeElement;
-      // this.clickIt.click();
+    if (this.counter < foc.length - 1) {
+      this.counter++;
+    } else {
+      this.counter = 0;
     }
   }
 
@@ -203,12 +179,7 @@ export class AppComponent {
 
   async init() {
     this.truncatedMobileNet = await this.loadTruncatedMobileNet();
-
-    // Warm up the model. This uploads weights to the GPU and compiles the WebGL
-    // programs so the first time we collect data from the webcam it will be
-    // quick.
     tf.tidy(() => this.truncatedMobileNet.predict(this.webcam.capture()));
-
     this.controller.nativeElement.style.display = "";
     this.statusEl.nativeElement.style.display = "none";
   }
@@ -225,42 +196,12 @@ export class AppComponent {
     this.addExampleHandler = handler;
   }
 
-  drawThumb(img, label) {
-    if (this.thumbDisplayed[label] == null) {
-      console.log(this.BUTTONS);
-      const thumbCanvas = this.BUTTONS[label].nativeElement;
-      this.draw(img, thumbCanvas);
-    }
-  }
-
-  draw(image, canvas) {
-    const [width, height] = [224, 224];
-    const ctx = canvas.getContext("2d");
-    const imageData = new ImageData(width, height);
-    const data = image.dataSync();
-    for (let i = 0; i < height * width; ++i) {
-      const j = i * 4;
-      imageData.data[j + 0] = (data[i * 3 + 0] + 1) * 127;
-      imageData.data[j + 1] = (data[i * 3 + 1] + 1) * 127;
-      imageData.data[j + 2] = (data[i * 3 + 2] + 1) * 127;
-      imageData.data[j + 3] = 255;
-    }
-    ctx.putImageData(imageData, 0, 0);
-  }
-
   async train() {
     if (this.controllerDataset.xs == null) {
       throw new Error("Add some examples before training!");
     }
-
-    // Creates a 2-layer fully connected model. By creating a separate model,
-    // rather than adding layers to the mobilenet model, we "freeze" the weights
-    // of the mobilenet model, and only train weights from the new model.
     this.model = tf.sequential({
       layers: [
-        // Flattens the input to a vector so we can use it in a dense layer. While
-        // technically a layer, this only performs a reshape (and has no training
-        // parameters).
         tf.layers.flatten({
           inputShape: this.truncatedMobileNet.outputs[0].shape.slice(1)
         }),
@@ -309,27 +250,18 @@ export class AppComponent {
 
   async predict() {
     this.predictingVisible = true;
-    // console.log("predicting");
-    let counter = 0;
 
     while (this.isPredicting) {
-      counter++;
       const predictedClass = tf.tidy(() => {
         const img = this.webcam.capture();
         const embeddings = this.truncatedMobileNet.predict(img);
         const predictions = this.model.predict(embeddings);
         return predictions.as1D().argMax();
       });
-
       const classId = (await predictedClass.data())[0];
       predictedClass.dispose();
-      // console.log("moving ", counter, this.CONTROLS[classId]);
-
       this.currentMove = this.CONTROLS[classId];
-
       this.actionClass.next(classId);
-      // this.takeAction(classId);
-
       await tf.nextFrame();
     }
     this.predictingVisible = false;
@@ -352,13 +284,28 @@ export class AppComponent {
   async handler(label) {
     this.addExampleHandler(label);
     await tf.nextFrame();
-    document.body.removeAttribute("data-active");
   }
 
-  saveModel() {
-    this.model.save("downloads://sign-model").then(res => {
-      console.log(res);
-      this.downloaded = true;
-    });
+  drawThumb(img, label) {
+    if (this.thumbDisplayed[label] == null) {
+      console.log(this.BUTTONS);
+      const thumbCanvas = this.BUTTONS[label].nativeElement;
+      this.draw(img, thumbCanvas);
+    }
+  }
+
+  draw(image, canvas) {
+    const [width, height] = [224, 224];
+    const ctx = canvas.getContext("2d");
+    const imageData = new ImageData(width, height);
+    const data = image.dataSync();
+    for (let i = 0; i < height * width; ++i) {
+      const j = i * 4;
+      imageData.data[j + 0] = (data[i * 3 + 0] + 1) * 127;
+      imageData.data[j + 1] = (data[i * 3 + 1] + 1) * 127;
+      imageData.data[j + 2] = (data[i * 3 + 2] + 1) * 127;
+      imageData.data[j + 3] = 255;
+    }
+    ctx.putImageData(imageData, 0, 0);
   }
 }
