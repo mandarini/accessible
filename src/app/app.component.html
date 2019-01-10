@@ -152,6 +152,12 @@
       <span *ngIf="!isPredicting">CHECK</span
       ><span *ngIf="isPredicting">STOP</span>
     </button>
+    <button mat-raised-button color="primary" (click)="save()">
+      <span>SAVE MODEL</span>
+    </button>
+    <button mat-raised-button color="primary" (click)="load()">
+      <span>LOAD MODEL</span>
+    </button>
   </div>
   <p *ngIf="currentMove">
     You are currently doing the <strong>{{ currentMove }}</strong> sign.

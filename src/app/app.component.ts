@@ -104,8 +104,8 @@ export class AppComponent {
 
   ngOnInit() {
     this.init();
-    let test = this.actionClass.pipe(throttle(val => interval(3000)));
-    test.subscribe(x => {
+    let action = this.actionClass.pipe(throttle(val => interval(3000)));
+    action.subscribe(x => {
       console.log("emission", x);
       this.takeAction(x);
     });
@@ -114,21 +114,21 @@ export class AppComponent {
   takeAction(num: number) {
     console.log("taking action", num);
     this.focusable = document.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     let foc = this.focusable;
     if (num === 0) {
       console.log(foc.item(this.counter));
       foc.item(this.counter).focus();
+      if (this.counter < foc.length - 1) {
+        this.counter++;
+      } else {
+        this.counter = 0;
+      }
     }
     if (num === 2) {
       console.log(foc.item(this.counter));
-      foc.item(this.counter).click();
-    }
-    if (this.counter < foc.length - 1) {
-      this.counter++;
-    } else {
-      this.counter = 0;
+      foc.item(this.counter === 0 ? 0 : this.counter - 1).click();
     }
   }
 
@@ -164,7 +164,7 @@ export class AppComponent {
     // Just for visual que for now
 
     let focusables = document.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
     focusables.forEach(el => {
@@ -307,5 +307,18 @@ export class AppComponent {
       imageData.data[j + 3] = 255;
     }
     ctx.putImageData(imageData, 0, 0);
+  }
+
+  save() {
+    this.model.save("indexeddb://access-model").then(x => {
+      console.log("model saved", x);
+    });
+  }
+
+  load() {
+    tf.loadModel("indexeddb://access-model").then(x => {
+      this.model = x;
+      this.doneTraining = true;
+    });
   }
 }
