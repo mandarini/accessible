@@ -9,6 +9,10 @@ import * as tf from "@tensorflow/tfjs";
 import { Webcam } from "./webcam";
 import { ControllerDataset } from "./controller-dataset";
 
+import { interval } from "rxjs";
+import { throttle } from "rxjs/operators";
+import { Observable, Subject } from "rxjs";
+
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -16,7 +20,7 @@ import { ControllerDataset } from "./controller-dataset";
 })
 export class AppComponent {
   title = "accessible";
-  CONTROLS: Array<string> = ["first", "second", "third", "control"];
+  CONTROLS: Array<string> = ["Next Element", "second", "Click", "control"];
   NUM_CLASSES: number = 4;
   webcam: Webcam;
   controllerDataset: ControllerDataset;
@@ -91,21 +95,31 @@ export class AppComponent {
   counter: number = 0;
   clickIt: HTMLElement;
 
+  actionClass: Subject<number>;
+
   constructor() {
     this.controllerDataset = new ControllerDataset(this.NUM_CLASSES);
+    this.actionClass = new Subject();
   }
 
   ngOnInit() {
     this.init();
     document.addEventListener("keydown", this.logKey);
+    let test = this.actionClass.pipe(throttle(val => interval(3000)));
+    test.subscribe(x => {
+      console.log("emission", x);
+      this.takeAction(x);
+    });
   }
 
   takeAction(num: number) {
+    console.log("taking action", num);
     this.focusable = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
     let foc = this.focusable;
     if (num === 0) {
+      console.log(foc.item(this.counter));
       foc.item(this.counter).focus();
       if (this.counter < foc.length - 1) {
         this.counter++;
@@ -122,11 +136,11 @@ export class AppComponent {
     this.focusable = document.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    console.log(this.focusable);
+    // console.log(this.focusable);
     let foc = this.focusable;
-    console.log(e.code);
+    // console.log(e.code);
     if (e.code === "KeyK") {
-      console.log(foc.item(this.counter));
+      // console.log(foc.item(this.counter));
       foc.item(this.counter).focus();
       if (this.counter < foc.length - 1) {
         this.counter++;
@@ -168,6 +182,21 @@ export class AppComponent {
         );
 
         this.drawThumb(img, label);
+      });
+    });
+
+    // Just for visual que for now
+
+    let focusables = document.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+
+    focusables.forEach(el => {
+      el.addEventListener("focus", function() {
+        this.style.border = "thick solid #FF0000";
+      });
+      el.addEventListener("blur", function() {
+        this.style.border = "unset";
       });
     });
   }
@@ -280,8 +309,11 @@ export class AppComponent {
 
   async predict() {
     this.predictingVisible = true;
-    console.log("predicting");
+    // console.log("predicting");
+    let counter = 0;
+
     while (this.isPredicting) {
+      counter++;
       const predictedClass = tf.tidy(() => {
         const img = this.webcam.capture();
         const embeddings = this.truncatedMobileNet.predict(img);
@@ -291,11 +323,12 @@ export class AppComponent {
 
       const classId = (await predictedClass.data())[0];
       predictedClass.dispose();
-      console.log("moving ", this.CONTROLS[classId]);
+      // console.log("moving ", counter, this.CONTROLS[classId]);
 
       this.currentMove = this.CONTROLS[classId];
 
-      this.takeAction(classId);
+      this.actionClass.next(classId);
+      // this.takeAction(classId);
 
       await tf.nextFrame();
     }
